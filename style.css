@@ -1,0 +1,15 @@
+.search-expand {
+  width: 300px;
+  transition: width 0.4s ease;
+}
+
+.search-expand:focus,
+.search-expand:hover {
+  width: 1000px;
+}
+
+.carousel-caption {
+        top: 50%;
+        transform: translateY(-50%);
+        bottom: initial;
+}
