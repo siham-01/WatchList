@@ -1,33 +1,50 @@
 
 const apiKey = 'e6b5abf09b3886e139965f0bdba31cd9';
 
+const trendingURL = `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`
+const comedyURL = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=35`;
 
+const URLs = [trendingURL, comedyURL]
 
-const apiUrl = `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`;
 const cardDeck = document.querySelector(".card-deck");
 const trending = document.querySelector("#trending");
 
 
-async function fetchMovies() {
+async function fetchMovies(apiUrl) {
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
 
         let i = 0;
-        let row;
+        let carouselItem;
+        let cardRow;
 
         data.results.forEach(media => {
 
+
+
+
             if (i % 3 == 0){
-                row = document.createElement("div");
-                row.classList = "row";
-                cardDeck.appendChild(row);
+                carouselItem = document.createElement("div");
+                if (i == 0){
+                    carouselItem.classList = "carousel-item active";
+
+                }
+                else{
+                    carouselItem.classList = "carousel-item";
+                }
+
+                cardRow = document.createElement("div");
+                cardRow.classList = "d-flex justify-content-center gap-3";
+                carouselItem.appendChild(cardRow);
+
+                trending.appendChild(carouselItem);
 
             }
+
             i++;
             const movieCard = createMovieCard(media);
-            console.log(movieCard, row);
-            row.appendChild(movieCard);
+            cardRow.appendChild(movieCard);
         });
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -38,8 +55,6 @@ function createMovieCard(media) {
     const { title, backdrop_path, overview, release_date, id } = media;
 
     const movieCard = document.createElement("div");
-    movieCard.classList = "col";
-
     const formattedDate = new Date(release_date).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
@@ -87,4 +102,4 @@ function createMovieCard(media) {
     */
 }
 
-fetchMovies();
+fetchMovies(URLs[0]);
