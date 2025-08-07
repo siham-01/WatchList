@@ -8,43 +8,92 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-light">
-  <!-- Navbar (consistent with index.html) -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">
-        <i class="fas fa-film me-2"></i>MovieRecommender
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="index.html">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="discover.html">Discover</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="form.html">Recommendations</a>
-          </li>
-        </ul>
-        <div class="d-flex">
-          <a href="user-profile.html" class="btn btn-outline-light">
-            <i class="fas fa-user-circle me-1"></i> My Profile
-          </a>
+<body>
+
+  <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+
+        <!-- Logo/Home Link -->
+        <a class="navbar-brand mx-3" href="/index.html">
+          <img src="/Logo.png" alt="logo" width="67" height="24">
+        </a>
+
+        <!-- Toggler (hamburger icon for small screens) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar content -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+
+          <!-- Left side: Discover Dropdown -->
+          <ul class="navbar-nav me-auto mx-3">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                Discover
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/Discover Page/discover.html">Trending Movies</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Something else</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active me-auto mx-3" href="form.html">Recommendations</a>
+            </li>
+          </ul>
+          
+
+          <!-- Right side: Search Bar + Notifications + Profile Dropdown -->
+          <div class="d-flex align-items-center">
+
+            <!-- Search Bar -->
+            <form class="d-flex me-3 search-expand" role="search">
+              <input class="form-control" type="search" placeholder="Search for Movies" aria-label="Search">
+            </form>
+
+            <!-- Notification Dropdown -->
+            <div class="nav-item dropdown mx-3">
+              <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                <i class="fa-regular fa-bell fa-xl"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#">Notif</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Notif</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Notif</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Notif</a></li>
+              </ul>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="nav-item dropdown mx-3">
+              <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                <i class="fa-regular fa-circle-user fa-xl"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="User Profile Page/user-profile.html">My Profile</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+              </ul>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
   <!-- Main Form Content -->
   <div class="container my-5">
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header bg-light">
             <h2 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Movie Recommendation Form</h2>
           </div>
           <div class="card-body">
@@ -121,12 +170,14 @@
     </div>
   </div>
 
-  <!-- Footer (consistent with index.html) -->
-  <footer class="bg-dark text-white py-4">
-    <div class="container text-center">
-      <p class="mb-0">&copy; 2023 MovieRecommender. All rights reserved.</p>
+  <!-- Footer -->
+  <footer class="bg-body-tertiary text-center text-lg-start">
+    <div class="text-center p-3">
+      © 2020 Copyright:
+      <a class="text-body" href="index.html">Movie</a>
     </div>
   </footer>
+    
 
   <!-- Toast Notification -->
   <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
