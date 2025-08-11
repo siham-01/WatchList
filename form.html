@@ -44,7 +44,7 @@
               <a class="nav-link active me-auto mx-3" href="form.html">Recommendations</a>
             </li>
           </ul>
-          
+
 
           <!-- Right side: Search Bar + Notifications + Profile Dropdown -->
           <div class="d-flex align-items-center">
@@ -155,15 +155,15 @@
             </div>
 
             <!-- Recommendations (hidden initially) -->
-            <div id="recommendationsSection" class="d-none mt-5">
-              <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3><i class="fas fa-star me-2"></i>Your Personalized Recommendations</h3>
-                <button id="newRecommendationsBtn" class="btn btn-outline-secondary">
-                  <i class="fas fa-redo me-1"></i> Get New Recommendations
-                </button>
-              </div>
-              <div id="recommendationsContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"></div>
-            </div>
+            <div id="recommendationsSection" class="d-none mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h4 class="h5 mb-0"><i class="fas fa-star me-1"></i>Your Recommendations</h4>
+    <button id="newRecommendationsBtn" class="btn btn-sm btn-outline-secondary">
+      <i class="fas fa-redo"></i>
+    </button>
+  </div>
+  <div id="recommendationsContainer" class="row g-2"></div>
+</div>
           </div>
         </div>
       </div>
@@ -177,7 +177,7 @@
       <a class="text-body" href="index.html">Movie</a>
     </div>
   </footer>
-    
+
 
   <!-- Toast Notification -->
   <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
@@ -192,43 +192,5 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="form.js"></script>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>
