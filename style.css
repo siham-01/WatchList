@@ -13,3 +13,17 @@
   transform: translateY(-50%);
   bottom: initial;
 }
+
+.btn-primary {
+  background-color: #0097b2;
+  color: white;
+  border: none;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #74ceda !important;
+}
