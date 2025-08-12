@@ -4,6 +4,7 @@ const apiKey = 'e6b5abf09b3886e139965f0bdba31cd9';
 
 const trendingURL = `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`;
 const baseDiscoverURL = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&sort_by=popularity.desc`;
+const genreURL = `https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=en-US`
 
 const map = new Map();
 map.set("Trending", trendingURL);
@@ -26,6 +27,9 @@ map.set("Western", `${baseDiscoverURL}&with_genres=37`);
 
 
 
+
+
+
 async function fetchMovies(apiUrl, section, key) {
     try {
         const response = await fetch(apiUrl);
@@ -40,7 +44,7 @@ async function fetchMovies(apiUrl, section, key) {
 
 
 
-            if (i % 3 == 0){
+            if (i % 5 == 0){
                 carouselItem = document.createElement("div");
                 if (i == 0){
                     carouselItem.classList = "carousel-item active";
@@ -67,8 +71,23 @@ async function fetchMovies(apiUrl, section, key) {
     }
 }
 
+
+function getPopularityLabel(score) {
+    if (score > 400) {
+        return "🔥 Extremely Popular";
+    } else if (score > 100) {
+        return "⭐ Popular";
+    } else {
+        return "💤 Low Interest";
+    }
+}
+
+
+
+
+
 function createMovieCard(media, key) {
-    const { title, backdrop_path, overview, release_date, id } = media;
+    const { title, backdrop_path, overview, release_date, id, poster_path, vote_average, popularity} = media;
 
     const movieCard = document.createElement("div");
     const formattedDate = new Date(release_date).toLocaleDateString('en-US', {
@@ -77,26 +96,82 @@ function createMovieCard(media, key) {
         day: 'numeric'
     });
 
+    const imgSrc = backdrop_path
+      ? `https://image.tmdb.org/t/p/w500${backdrop_path}`
+      : 'https://via.placeholder.com/500x750?text=No+Poster';
+
+
+      const posterImg = poster_path
+      ? `https://image.tmdb.org/t/p/w500${poster_path}`
+      : 'https://via.placeholder.com/500x750?text=No+Poster';
+
+    const roundedScore = Math.round(vote_average * 10) / 10;
+
+    const safeOverview = overview?.trim() || "No description available.";
+
+
+
+
+
+
+
+
+
+
+
+
 
     movieCard.innerHTML = `
-        <div class="card" >
-          <img class="card-img-top" src="https://image.tmdb.org/t/p/w500/${backdrop_path}" alt="Card image cap">
+        <div class="card h-100 custom-card" >
+          <img class="card-img-top" src="${posterImg}" alt="Card image cap">
           <div class="card-body">
             <h5 class="card-title">${title}</h5>
-            <p class="card-text"> Release Date: ${formattedDate} </p>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal${id}${key}">
+
+            <button type="button" class="btn btn-primary button-color" data-bs-toggle="modal" data-bs-target="#modal${id}${key}">
                 Description
             </button>
 
             <div class="modal fade" id="modal${id}${key}" tabindex="-1" aria-labelledby="label${id}${key}" >
-                <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="label${id}${key}">Description</h1>
+                     <h5 class="card-title">${title}</h5>
+
+
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-start">
-                    ${overview}
+                    <img class="card-img-top" src="${imgSrc}" alt="Card image cap" style="padding-bottom: 10px;">
+
+                    <i class="fa-solid fa-file"></i>
+
+                    ${safeOverview}
+
+                    <hr>
+
+                    <div class = "movie-info">
+
+                        <span> <i class="fa-solid fa-star"></i>
+                        Ratings: ${roundedScore} / 10
+
+                        </span>
+
+                        <span>
+                        <i class="fa-solid fa-calendar-days"></i>
+                        ${formattedDate}
+
+                        </span>
+
+                        <span>
+                        ${getPopularityLabel(popularity)}
+
+                        </span>
+
+
+
+                    </div>
+
                     </div>
                     <div class="modal-footer">
                     </div>
@@ -107,21 +182,21 @@ function createMovieCard(media, key) {
         </div>
 `
     return movieCard;
-    /*
 
-
-
-
-    */
 }
+
+
+
+
+
 
 function createSection(title){
     let container = document.createElement("div");
-    container.classList = "container text-center my-4"
+    container.classList = "container text-center my-4 "
 
     container.innerHTML = `
 
-    <h3 class = "text-start">${title} Movies</h3>
+    <h3 class = "text-start m-5">${title} Movies</h3>
     <div id="movies"></div>
 
     <div  class="card-deck"></div>
