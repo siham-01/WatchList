@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <h6 class="card-title text-truncate mb-2" title="${movie.title}">
           ${movie.title}
         </h6>
-        <button class="btn btn-success mt-auto" data-bs-toggle="modal" data-bs-target="#movieDetailModal-${movie.id}">
+        <button class="btn btn-primary mt-auto" data-bs-toggle="modal" data-bs-target="#movieDetailModal-${movie.id}">
           <i class="fas fa-plus me-1"></i> More
         </button>
       </div>
