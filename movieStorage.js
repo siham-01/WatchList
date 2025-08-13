@@ -15,6 +15,17 @@ const StorageManager = {
     }
   },
 
+  addToWatched: function(movie) {
+    const storage = this.getStorage();
+    const exists = storage.watched.some(m => m.id === movie.id);
+    if (!exists) {
+        storage.watched.push(movie);
+        this.saveStorage(storage);
+        return true;
+    }
+    return false;
+},
+
   getStorage: function() {
     const data = localStorage.getItem('movieAppData');
     return data ? JSON.parse(data) : { watchlist: [], watched: [], ratings: {} };
@@ -26,7 +37,6 @@ const StorageManager = {
 
   addToWatchlist: function(movie) {
     const storage = this.getStorage();
-    // Check if movie already exists in watchlist or watched
     const existsInWatchlist = storage.watchlist.some(m => m.id === movie.id);
     const existsInWatched = storage.watched.some(m => m.id === movie.id);
 
