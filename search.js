@@ -29,6 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalBody = document.getElementById("searchResultsModalBody");
   const searchResultsModal = new bootstrap.Modal(modalElement);
 
+  // Store movie data for button handlers
+  window.searchMovieData = {};
+
   searchForm.addEventListener("submit", e => {
     e.preventDefault();
     const query = searchInput.value.trim();
@@ -44,12 +47,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(data => {
         modalBody.innerHTML = "";
         detailModalsContainer.innerHTML = "";
+        window.searchMovieData = {};
 
         if (data.results?.length) {
           data.results.forEach(movie => {
+            window.searchMovieData[movie.id] = movie;
             const card = createSearchCard(movie);
             modalBody.appendChild(card);
-
             createDetailModal(movie);
           });
         } else {
@@ -67,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function createSearchCard(movie) {
     const posterPath = movie.poster_path
       ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
-      : "placeholder.jpg"; // Your placeholder image
+      : "https://via.placeholder.com/200x300?text=No+Poster";
 
     const card = document.createElement("div");
     card.className = "card m-2 d-flex flex-column";
@@ -88,40 +92,150 @@ document.addEventListener("DOMContentLoaded", () => {
     return card;
   }
 
-    function createDetailModal(movie) {
-        const { id, title, overview, release_date, poster_path } = movie;
-        const year = release_date ? release_date.substring(0,4) : "N/A";
-        const posterUrl = poster_path
-            ? `https://image.tmdb.org/t/p/w300${poster_path}`
-            : "placeholder.jpg";
+  function createDetailModal(movie) {
+    const { id, title, overview, release_date, poster_path } = movie;
+    const year = release_date ? release_date.substring(0,4) : "N/A";
+    const posterUrl = poster_path
+      ? `https://image.tmdb.org/t/p/w300${poster_path}`
+      : "https://via.placeholder.com/300x450?text=No+Poster";
 
-        const modalHTML = `
-            <div class="modal fade" id="movieDetailModal-${id}" tabindex="-1" aria-labelledby="movieDetailLabel-${id}" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="movieDetailLabel-${id}">${title} (${year})</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex">
-                    <img src="${posterUrl}" alt="${title} Poster" class="me-3" style="max-width: 150px; flex-shrink: 0;">
-                    <div>
-                    <p>${overview || "No description available."}</p>
-                    <div class="btn-group btn-group-sm d-flex flex-wrap mb-3" role="group" aria-label="Rating buttons">
-                        <button class="btn btn-outline-danger")">Awful</button>
-                        <button class="btn btn-outline-warning")">Meh</button>
-                        <button class="btn btn-outline-primary")">Good</button>
-                        <button class="btn btn-outline-success")">Amazing</button>
-                    </div>
-                    <button class="btn btn-primary w-100">Add to Watchlist</button>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-        `;
+    // Check current status
+    const storage = StorageManager.getStorage();
+    const inWatchlist = storage.watchlist.some(m => m.id === id);
+    const inWatched = storage.watched.some(m => m.id === id);
+    const currentRating = storage.watched.find(m => m.id === id)?.userRating || '';
 
-        detailModalsContainer.insertAdjacentHTML('beforeend', modalHTML);
+    const modalHTML = `
+      <div class="modal fade" id="movieDetailModal-${id}" tabindex="-1" aria-labelledby="movieDetailLabel-${id}" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="movieDetailLabel-${id}">${title} (${year})</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex">
+              <img src="${posterUrl}" alt="${title} Poster" class="me-3" style="max-width: 150px; flex-shrink: 0;">
+              <div class="flex-grow-1">
+                <p>${overview || "No description available."}</p>
+
+                ${inWatched ? `
+                  <div class="alert alert-success mb-3">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Already watched - Rated: ${currentRating ? currentRating.charAt(0).toUpperCase() + currentRating.slice(1) : 'No rating'}
+                  </div>
+                ` : `
+                  <div class="btn-group btn-group-sm d-flex flex-wrap mb-3" role="group" aria-label="Rating buttons">
+                    <button class="btn btn-outline-danger" onclick="rateFromSearch(${id}, 'awful')">Awful</button>
+                    <button class="btn btn-outline-warning" onclick="rateFromSearch(${id}, 'meh')">Meh</button>
+                    <button class="btn btn-outline-primary" onclick="rateFromSearch(${id}, 'good')">Good</button>
+                    <button class="btn btn-outline-success" onclick="rateFromSearch(${id}, 'amazing')">Amazing</button>
+                    <button class="btn btn-outline-secondary" onclick="rateFromSearch(${id}, 'notseen')">Didn't See It</button>
+                  </div>
+                `}
+
+                ${inWatchlist ?
+                  `<button class="btn btn-success w-100" disabled><i class="fas fa-check me-1"></i> Already in Watchlist</button>` :
+                  (inWatched ?
+                    `<button class="btn btn-secondary w-100" disabled><i class="fas fa-eye me-1"></i> Already Watched</button>` :
+                    `<button class="btn btn-primary w-100" onclick="addToWatchlistFromSearch(${id})">Add to Watchlist</button>`
+                  )
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    detailModalsContainer.insertAdjacentHTML('beforeend', modalHTML);
+  }
+
+  window.addToWatchlistFromSearch = function(movieId) {
+    const movie = window.searchMovieData[movieId];
+    if (!movie) return;
+
+    const watchlistMovie = {
+        id: movie.id,
+        title: movie.title,
+        poster_path: movie.poster_path,
+        overview: movie.overview,
+        release_date: movie.release_date,
+        addedAt: new Date().toISOString()
+    };
+
+    if (StorageManager.addToWatchlist(watchlistMovie)) {
+        showToast(`"${movie.title}" added to watchlist!`);
+
+        // Update the button immediately
+        const modal = document.getElementById(`movieDetailModal-${movieId}`);
+        if (modal) {
+            const button = modal.querySelector('.btn-primary');
+            if (button) {
+                button.innerHTML = '<i class="fas fa-check me-1"></i> In Watchlist';
+                button.className = 'btn btn-success w-100';
+                button.disabled = true;
+                button.onclick = null;
+            }
+        }
+
+        if (typeof displayWatchlist === 'function') {
+            displayWatchlist();
+        }
+    } else {
+        showToast(`"${movie.title}" is already in your watchlist!`, 'warning');
     }
+};
+
+window.rateFromSearch = function(movieId, rating, buttonElement) {
+  const movie = window.searchMovieData[movieId];
+  if (!movie) return;
+
+  const storage = StorageManager.getStorage();
+  const inWatchlist = storage.watchlist.some(m => m.id === movieId);
+  const movieTitle = movie.title;
+
+  if (rating !== 'notseen') {
+      const movieData = {
+          id: movie.id,
+          title: movie.title,
+          poster_path: movie.poster_path,
+          overview: movie.overview,
+          release_date: movie.release_date,
+          watchedAt: new Date().toISOString(),
+          userRating: rating
+      };
+
+      if (inWatchlist) {
+          if (StorageManager.removeFromWatchlist(movieId)) {
+              StorageManager.addToWatched(movieData);
+          }
+      } else {
+          StorageManager.addToWatched(movieData);
+      }
+
+      StorageManager.addRating(movieId, rating);
+
+      showToast(`"${movieTitle}" ${inWatchlist ? 'moved to watched' : 'added to watched'} and rated as ${rating.charAt(0).toUpperCase() + rating.slice(1)}!`);
+      const modal = document.getElementById(`movieDetailModal-${movieId}`);
+      if (modal) {
+          modal.querySelector('.modal-body > div').innerHTML = `
+              <p>${movie.overview || "No description available."}</p>
+              <div class="alert alert-success mb-3">
+                  <i class="fas fa-check-circle me-2"></i>
+                  Watched - Rated: ${rating.charAt(0).toUpperCase() + rating.slice(1)}
+              </div>
+              <button class="btn btn-secondary w-100" disabled>
+                  <i class="fas fa-check me-1"></i> Watched
+              </button>
+          `;
+      }
+  } else {
+      StorageManager.addRating(movieId, rating);
+      showToast(`Noted that you haven't seen "${movieTitle}"`);
+  }
+  if (typeof displayWatchedMovies === 'function') {
+      displayWatchedMovies();
+  }
+};
 
 });
