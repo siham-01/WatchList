@@ -1,1 +1,1 @@
-# final-project-movies
+# Final Project: [Your Project Name]
